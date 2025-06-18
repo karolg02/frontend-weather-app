@@ -1,34 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { useAccessibility } from './hooks/useAccessibility'
+import AccessibilityControls from './components/accessibility/AccessibilityControls'
+import { getWeatherIcon } from './utils/weatherIcons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 function App() {
-  const [count, setCount] = useState(0)
+  const accessibility = useAccessibility()
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <header className="header">
+        <h1>Weather App</h1>
+        <AccessibilityControls {...accessibility} />
+      </header>
+
+      <main className="main">
+        <FontAwesomeIcon icon={getWeatherIcon(0)} title="Słońce" /><br />
+        <FontAwesomeIcon icon={getWeatherIcon(3)} title="Chmury" /><br />
+        <FontAwesomeIcon icon={getWeatherIcon(61)} title="Deszcz" /><br />
+        <FontAwesomeIcon icon={getWeatherIcon(95)} title="Burza" />
+      </main>
+    </div>
   )
 }
 
