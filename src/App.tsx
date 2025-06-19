@@ -1,81 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useAccessibility } from './hooks/useAccessibility';
 import { useWeatherData } from './hooks/useWeatherData';
+import { useGeolocation } from './hooks/useGeolocation';
 import AccessibilityControls from './components/accessibility/AccessibilityControls';
 import { WeatherTable } from './components/weather/WeatherTable';
 import { WeatherSummaryTable } from './components/weather/WeatherSummaryTable';
 import LocationPicker from './components/map/LocationFromMap';
 import './styles/map.css';
 import "./styles/table.css";
+import { ErrorMessage } from './components/common/Error';
+import { Loading } from './components/common/Loading';
 
 function App() {
   const accessibility = useAccessibility();
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locationLoading, setLocationLoading] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const geolocation = useGeolocation();
 
   const { weatherData, summaryData, loading: weatherLoading, error: weatherError } = useWeatherData(
     coordinates?.latitude,
     coordinates?.longitude
   );
 
-  const getMyLocation = async () => {
-    if (!navigator.geolocation) {
-      setLocationError('Geolokalizacja nie jest obsługiwana przez tę przeglądarkę');
-      return;
-    }
-
-    setLocationLoading(true);
-    setLocationError(null);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setCoordinates({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        });
-        setLocationLoading(false);
-      },
-      (error) => {
-        let errorMessage = 'Nie udało się pobrać lokalizacji';
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = 'Dostęp do lokalizacji został odrzucony. Sprawdź ustawienia przeglądarki.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Informacje o lokalizacji są niedostępne';
-            break;
-          case error.TIMEOUT:
-            errorMessage = 'Przekroczono czas oczekiwania na lokalizację';
-            break;
-        }
-
-        setLocationError(errorMessage);
-        setLocationLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000
-      }
-    );
-  };
-
   useEffect(() => {
-    getMyLocation();
-  }, []);
+    if (geolocation.location) {
+      setCoordinates(geolocation.location);
+    }
+  }, [geolocation.location]);
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setCoordinates({ latitude: lat, longitude: lng });
-    setLocationError(null);
+    geolocation.clearError();
   };
 
-  const isLoading = locationLoading || weatherLoading;
-  const error = locationError || weatherError;
+  const handleRetry = () => {
+    if (weatherError) {
+      console.log('Retry weather data');
+    } else if (geolocation.error) {
+      geolocation.getCurrentLocation();
+    }
+  };
+
+  const isLoading = geolocation.loading || weatherLoading;
+  const error = geolocation.error || weatherError;
 
   return (
-    <div className="app">
+    <div className="App">
       <header className="header">
         <h1>🌤️ Prognoza Pogody</h1>
         <AccessibilityControls {...accessibility} />
@@ -95,26 +65,25 @@ function App() {
           <div className="location-controls">
             <button
               className="location-btn"
-              onClick={getMyLocation}
-              disabled={locationLoading}
+              onClick={geolocation.getCurrentLocation}
+              disabled={geolocation.loading}
               aria-describedby="location-status"
             >
-              {locationLoading ? '📍 Lokalizowanie...' : '📍 Znajdź mnie'}
+              {geolocation.loading ? '📍 Lokalizowanie...' : '📍 Znajdź mnie'}
             </button>
           </div>
-
-          {isLoading && coordinates && (
-            <div className="loading" id="location-status" role="status" aria-live="polite">
-              <p>Ładowanie danych pogodowych...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="error" role="alert" aria-live="assertive">
-              <p>Błąd: {error}</p>
-            </div>
-          )}
         </section>
+
+        {isLoading && (
+          <Loading message="Ładowanie danych pogodowych..." />
+        )}
+
+        {error && (
+          <ErrorMessage
+            message={error}
+            onRetry={handleRetry}
+          />
+        )}
 
         {!isLoading && !error && weatherData.length > 0 && (
           <section className="weather-forecast-section" aria-label="Prognoza pogody">

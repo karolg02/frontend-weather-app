@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 interface GeolocationState {
     latitude: number | null;
@@ -7,27 +7,33 @@ interface GeolocationState {
     error: string | null;
 }
 
+interface GeolocationCoordinates {
+    latitude: number;
+    longitude: number;
+}
+
 export const useGeolocation = () => {
-    const [location, setLocation] = useState<GeolocationState>({
+    const [state, setState] = useState<GeolocationState>({
         latitude: null,
         longitude: null,
-        loading: true,
+        loading: false,
         error: null
     });
 
-    useEffect(() => {
+    const getCurrentLocation = useCallback(() => {
         if (!navigator.geolocation) {
-            setLocation(prev => ({
+            setState(prev => ({
                 ...prev,
-                loading: false,
                 error: 'Geolokalizacja nie jest obsługiwana przez tę przeglądarkę'
             }));
             return;
         }
 
+        setState(prev => ({ ...prev, loading: true, error: null }));
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                setLocation({
+                setState({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     loading: false,
@@ -35,24 +41,16 @@ export const useGeolocation = () => {
                 });
             },
             (error) => {
-                let errorMessage = 'Nie udało się pobrać lokalizacji';
+                const errorMessages: Record<number, string> = {
+                    [error.PERMISSION_DENIED]: 'Dostęp do lokalizacji został odrzucony. Sprawdź ustawienia przeglądarki.',
+                    [error.POSITION_UNAVAILABLE]: 'Informacje o lokalizacji są niedostępne. Sprawdź połączenie internetowe.',
+                    [error.TIMEOUT]: 'Przekroczono czas oczekiwania na lokalizację. Spróbuj ponownie.'
+                };
 
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = 'Dostęp do lokalizacji został odrzucony';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = 'Informacje o lokalizacji są niedostępne';
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = 'Przekroczono czas oczekiwania na lokalizację';
-                        break;
-                }
-
-                setLocation(prev => ({
+                setState(prev => ({
                     ...prev,
                     loading: false,
-                    error: errorMessage
+                    error: errorMessages[error.code] || 'Nie udało się pobrać lokalizacji'
                 }));
             },
             {
@@ -63,5 +61,31 @@ export const useGeolocation = () => {
         );
     }, []);
 
-    return location;
+    const clearError = useCallback(() => {
+        setState(prev => ({ ...prev, error: null }));
+    }, []);
+
+    const reset = useCallback(() => {
+        setState({
+            latitude: null,
+            longitude: null,
+            loading: false,
+            error: null
+        });
+    }, []);
+
+    const location: GeolocationCoordinates | null = useMemo(() => {
+        return state.latitude !== null && state.longitude !== null
+            ? { latitude: state.latitude, longitude: state.longitude }
+            : null;
+    }, [state.latitude, state.longitude]);
+
+    return {
+        location,
+        loading: state.loading,
+        error: state.error,
+        getCurrentLocation,
+        clearError,
+        reset
+    };
 };
