@@ -7,18 +7,18 @@
 :root {
     --bg-primary: #ffffff;
     --bg-secondary: #f8fafc;
-    --text-primary: #1a202c;
+    --text-primary: #1b273f;
     --text-secondary: #4a5568;
     --border: #e2e8f0;
     --shadow: rgba(0, 0, 0, 0.1);
-    --accent: #3182ce;
-    --accent-hover: #2c5282;
+    --accent: #6a1f72;
+    --accent-hover: #90349c;
 
     --temp-cold: #3182ce;
     --temp-hot: #e53e3e;
     --energy-color: #38a169;
 
-    --cell-hover: #4a90e2;
+    --cell-hover: #90349c;
     --cell-hover-text: #ffffff;
     --row-even: #f1f5f9;
     --row-odd: #ffffff;
@@ -42,6 +42,7 @@ body.dark {
     --energy-color: #68d391;
     --row-even: #2d3748;
     --row-odd: #1a202c;
+    --cell-hover: #4a90e2;
 }
 
 body.high-contrast {
@@ -63,9 +64,18 @@ body.high-contrast {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-primary);
+    background: linear-gradient(135deg, #ffffff 0%, #764ba2 100%);
     color: var(--text-primary);
     line-height: 1.6;
+    min-height: 100vh;
+}
+
+body.dark {
+    background: linear-gradient(135deg, #000000 0%, #505e77 100%) !important;
+}
+
+body.high-contrast {
+    background: #000000 !important;
 }
 
 body.accessible-font {
@@ -82,10 +92,82 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
+
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     flex-wrap: wrap;
     gap: var(--spacing-sm);
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+
+    transition: all 0.3s ease;
+}
+
+body.dark header {
+    background: rgba(26, 32, 44, 0.3) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+body.high-contrast header {
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 2px solid rgba(255, 255, 0, 0.8) !important;
+    box-shadow: 0 8px 15px -3px rgba(255, 255, 0, 0.2), 0 4px 6px -2px rgba(255, 255, 0, 0.1);
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+    header {
+        background: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    body.dark header {
+        background: rgba(26, 32, 44, 0.9) !important;
+    }
+
+    body.high-contrast header {
+        background: rgba(0, 0, 0, 0.95) !important;
+    }
+}
+
+.header-scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+body.dark .header-scrolled {
+    background: rgba(26, 32, 44, 0.95) !important;
+}
+
+body.high-contrast .header-scrolled {
+    background: rgba(0, 0, 0, 0.98) !important;
 }
 
 .main {

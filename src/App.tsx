@@ -15,6 +15,7 @@ function App() {
   const accessibility = useAccessibility();
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isUsingGeolocation, setIsUsingGeolocation] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const geolocation = useGeolocation();
 
@@ -58,9 +59,20 @@ function App() {
   const isLoading = geolocation.loading || weatherLoading;
   const error = geolocation.error || weatherError;
 
+  // Dodaj scroll listener dla header effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="App">
-      <header className="header">
+      <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
         <h1>🌤️ Weather App</h1>
         <AccessibilityControls {...accessibility} />
       </header>
@@ -82,9 +94,9 @@ function App() {
               aria-describedby="location-status"
               title={isUsingGeolocation ? "Używasz już swojej lokalizacji. Kliknij na mapie aby wybrać inną." : undefined}
             >
-              {geolocation.loading ? '📍 Lokalizowanie...' :
-                isUsingGeolocation ? '📍 Używasz swojej lokalizacji' :
-                  '📍 Znajdź mnie'}
+              {geolocation.loading ? '📌 Lokalizowanie...' :
+                isUsingGeolocation ? '📌 Używasz swojej lokalizacji' :
+                  '📌 Znajdź mnie'}
             </button>
           </div>
         </section>
