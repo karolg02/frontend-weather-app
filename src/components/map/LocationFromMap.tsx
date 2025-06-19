@@ -1,6 +1,19 @@
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import { useEffect } from 'react';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface LocationPickerProps {
     onLocationSelect: (latitude: number, longitude: number) => void;
@@ -55,11 +68,6 @@ export default function LocationPicker({ onLocationSelect, selectedPosition }: L
                     <MapCenterController selectedPosition={selectedPosition} />
                 </MapContainer>
             </div>
-            {selectedPosition && (
-                <p className="selected-coords">
-                    Wybrane współrzędne: {selectedPosition.latitude.toFixed(4)}, {selectedPosition.longitude.toFixed(4)}
-                </p>
-            )}
         </div>
     );
 }

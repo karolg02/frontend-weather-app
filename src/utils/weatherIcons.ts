@@ -5,7 +5,8 @@ import {
     faCloudShowersHeavy,
     faSnowflake,
     faBolt,
-    faEye
+    faEye,
+    faCloudSun
 } from '@fortawesome/free-solid-svg-icons'
 
 export const getWeatherIcon = (weatherCode: number) => {
@@ -26,9 +27,10 @@ export const getWeatherIcon = (weatherCode: number) => {
     */
     switch (weatherCode) {
         case 0:
-            return faSun
         case 1:
+            return faSun
         case 2:
+            return faCloudSun
         case 3:
             return faCloud
         case 45:
