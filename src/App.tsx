@@ -1,52 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useAccessibility } from './hooks/useAccessibility';
 import { useWeatherData } from './hooks/useWeatherData';
-import { useGeolocation } from './hooks/useGeolocation';
+import { useCoordinates } from './hooks/useCoordinates';
 import AccessibilityControls from './components/accessibility/AccessibilityControls';
-import { WeatherTable } from './components/weather/WeatherTable';
-import { WeatherSummaryTable } from './components/weather/WeatherSummaryTable';
-import LocationPicker from './components/map/LocationFromMap';
-import './styles/map.css';
-import "./styles/table.css";
 import { ErrorMessage } from './components/common/Error';
 import { Loading } from './components/common/Loading';
+import './styles/map.css';
+import "./styles/table.css";
+import { LocationSection } from './components/map/LocationSelection';
+import { WeatherSection } from './components/weather/WeatherSection';
 
 function App() {
   const accessibility = useAccessibility();
-  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [isUsingGeolocation, setIsUsingGeolocation] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const geolocation = useGeolocation();
+  const {
+    coordinates,
+    isUsingGeolocation,
+    geolocation,
+    handleLocationSelect,
+    handleGetCurrentLocation
+  } = useCoordinates();
 
-  const { weatherData, summaryData, loading: weatherLoading, error: weatherError, apiError, refetch } = useWeatherData(
-    coordinates?.latitude,
-    coordinates?.longitude
-  );
-
-  useEffect(() => {
-    geolocation.getCurrentLocation();
-  }, []);
-
-  useEffect(() => {
-    if (geolocation.location) {
-      setCoordinates({
-        latitude: geolocation.location.latitude,
-        longitude: geolocation.location.longitude
-      });
-      setIsUsingGeolocation(true);
-    }
-  }, [geolocation.location?.latitude, geolocation.location?.longitude, geolocation.location?.timestamp]);
-
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setCoordinates({ latitude: lat, longitude: lng });
-    geolocation.clearError();
-    setIsUsingGeolocation(false);
-  };
-
-  const handleGetCurrentLocation = () => {
-    geolocation.getCurrentLocation();
-  };
+  const {
+    weatherData,
+    summaryData,
+    loading: weatherLoading,
+    error: weatherError,
+    apiError,
+    refetch
+  } = useWeatherData(coordinates?.latitude, coordinates?.longitude);
 
   const handleRetry = () => {
     if (apiError || weatherError) {
@@ -60,11 +43,7 @@ function App() {
   const hasError = geolocation.error || weatherError || apiError;
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 50);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -77,32 +56,15 @@ function App() {
       </header>
 
       <main className="main">
-        <section className="location-section" aria-label="Wybór lokalizacji">
-          <h2>Wybierz lokalizację</h2>
+        <LocationSection
+          coordinates={coordinates}
+          isUsingGeolocation={isUsingGeolocation}
+          geolocationLoading={geolocation.loading}
+          onLocationSelect={handleLocationSelect}
+          onGetCurrentLocation={handleGetCurrentLocation}
+        />
 
-          <LocationPicker
-            onLocationSelect={handleLocationSelect}
-            selectedPosition={coordinates}
-          />
-
-          <div className="location-controls">
-            <button
-              className="location-btn"
-              onClick={handleGetCurrentLocation}
-              disabled={geolocation.loading || isUsingGeolocation}
-              aria-describedby="location-status"
-              title={isUsingGeolocation ? "Używasz już swojej lokalizacji. Kliknij na mapie aby wybrać inną." : undefined}
-            >
-              {geolocation.loading ? '📌 Lokalizowanie...' :
-                isUsingGeolocation ? '📌 Używasz swojej lokalizacji' :
-                  '📌 Znajdź mnie'}
-            </button>
-          </div>
-        </section>
-
-        {isLoading && (
-          <Loading message="Ładowanie danych pogodowych..." />
-        )}
+        {isLoading && <Loading message="Ładowanie danych pogodowych..." />}
 
         {hasError && (
           <ErrorMessage
@@ -113,21 +75,9 @@ function App() {
         )}
 
         {!isLoading && !hasError && weatherData.length > 0 && (
-          <section className="weather-forecast-section" aria-label="Prognoza pogody">
-            <h2>Prognoza na 7 dni</h2>
-            <div className="weather-results">
-              <WeatherTable weatherData={weatherData} />
-            </div>
-          </section>
+          <WeatherSection weatherData={weatherData} summaryData={summaryData} />
         )}
       </main>
-
-      {!isLoading && !hasError && summaryData && (
-        <footer className="weather-summary-footer" aria-label="Podsumowanie prognozy">
-          <h2>Podsumowanie tygodnia</h2>
-          <WeatherSummaryTable summaryData={summaryData} />
-        </footer>
-      )}
     </div>
   );
 }
