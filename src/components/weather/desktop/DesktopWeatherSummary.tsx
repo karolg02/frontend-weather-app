@@ -14,46 +14,36 @@ export const WeatherSummaryDesktop = ({ summaryData }: DesktopWeatherSummaryProp
 
     return (
         <div className="weather-summary-desktop">
-            <table className="weather-summary-table">
-                <thead>
-                    <tr>
-                        <th>Skrajna Min Temp. (°C)</th>
-                        <th>Skrajna Max Temp. (°C)</th>
-                        <th>Średnie ciśnienie (hPa)</th>
-                        <th>Średni czas ekspozycji na słońce (h)</th>
-                        <th>Prognoza pogody</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="temp-min">
-                            {typeof minTemp === 'number'
-                                ? minTemp.toFixed(1)
-                                : minTemp
-                            }
-                        </td>
-                        <td className="temp-max">
-                            {typeof maxTemp === 'number'
-                                ? maxTemp.toFixed(1)
-                                : maxTemp
-                            }
-                        </td>
-                        <td>
-                            {typeof avgPressure === 'number'
-                                ? avgPressure.toFixed(1)
-                                : avgPressure
-                            }
-                        </td>
-                        <td className="energy-cell">
-                            {typeof avgSunshine === 'number'
-                                ? avgSunshine.toFixed(1)
-                                : avgSunshine
-                            }
-                        </td>
-                        <td className="prediction-text">{prediction}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div className="weather-summary-container">
+                <table className="weather-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Min Temp.</th>
+                            <th>Max Temp.</th>
+                            <th>Ciśnienie</th>
+                            <th>Słońce</th>
+                            <th>Prognoza</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="temp-min">
+                                {typeof minTemp === 'number' ? `${minTemp.toFixed(1)}°C` : minTemp}
+                            </td>
+                            <td className="temp-max">
+                                {typeof maxTemp === 'number' ? `${maxTemp.toFixed(1)}°C` : maxTemp}
+                            </td>
+                            <td>
+                                {typeof avgPressure === 'number' ? `${avgPressure.toFixed(0)} hPa` : avgPressure}
+                            </td>
+                            <td className="energy-cell">
+                                {typeof avgSunshine === 'number' ? `${avgSunshine.toFixed(1)}h` : avgSunshine}
+                            </td>
+                            <td className="prediction-text">{prediction}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };
