@@ -60,6 +60,7 @@ export default function AccessibilityControls({
                             justifyContent: 'center',
                             transition: 'all 0.2s ease'
                         }}
+                        aria-label={`Ustaw rozmiar czcionki na ${size} procent`}
                         title={`Ustaw rozmiar czcionki na ${size}%`}
                     >
                         A
@@ -78,6 +79,7 @@ export default function AccessibilityControls({
                     cursor: 'pointer',
                     fontSize: '0.9rem'
                 }}
+                aria-label="Przełącz czcionkę dla słabowidzących"
                 title="Przełącz czcionkę dla słabowidzących"
             >
                 👁️
@@ -94,6 +96,7 @@ export default function AccessibilityControls({
                     cursor: 'pointer',
                     fontSize: '0.9rem'
                 }}
+                aria-label={`Przełącz na ${highContrast ? 'tryb normalny' : isDark ? 'tryb wysoki kontrast' : 'tryb ciemny'}`}
                 title={`Tryb: ${highContrast ? 'Wysoki kontrast' : isDark ? 'Ciemny' : 'Jasny'}`}
             >
                 {getThemeIcon()}

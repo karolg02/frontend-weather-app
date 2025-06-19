@@ -16,6 +16,11 @@ export const WeatherSummaryDesktop = ({ summaryData }: DesktopWeatherSummaryProp
         <div className="weather-summary-desktop">
             <div className="weather-summary-container">
                 <table className="weather-summary-table">
+                    <caption id="table-description" className="sr-only">
+                        Tabela zawiera podsumowanie prognozy pogody na tydzień:
+                        minimalną i maksymalną temperaturę, średnie ciśnienie, czas nasłonecznienia
+                        oraz prognozę pogody.
+                    </caption>
                     <thead>
                         <tr>
                             <th>Min Temp.</th>

@@ -17,6 +17,7 @@ export const LocationSection = ({
 }: LocationSectionProps) => {
     return (
         <section className="location-section" aria-label="Wybór lokalizacji">
+            <h2>Wybierz lokalizację</h2>
             <LocationPicker
                 onLocationSelect={onLocationSelect}
                 selectedPosition={coordinates}

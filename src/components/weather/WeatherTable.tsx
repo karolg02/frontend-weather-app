@@ -8,7 +8,10 @@ interface WeatherTableProps {
 
 export const WeatherTable = ({ weatherData }: WeatherTableProps) => {
     return (
-        <div className="weather-forecast">
+        <div className="weather-forecast"
+            role="region"
+            aria-label="Tabela prognozy pogody - responsywny widok"
+            aria-live="polite">
             <MobileTableWeather weatherData={weatherData} />
             <DesktopWeatherTable weatherData={weatherData} />
         </div>

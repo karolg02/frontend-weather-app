@@ -51,7 +51,9 @@ function LocationMarker({ onLocationSelect, selectedPosition }: LocationPickerPr
 export default function LocationPicker({ onLocationSelect, selectedPosition }: LocationPickerProps) {
     return (
         <div className="location-picker">
-            <div className="map-container">
+            <div className="map-container"
+                role="application"
+                aria-label="Mapa interaktywna do wyboru lokalizacji">
                 <MapContainer
                     center={[52.3578, 19.2947]}
                     zoom={6}

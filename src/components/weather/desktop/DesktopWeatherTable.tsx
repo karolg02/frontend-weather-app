@@ -25,7 +25,13 @@ export const DesktopWeatherTable = ({ weatherData }: DesktopWeatherTableProps) =
 
     return (
         <div className="weather-forecast-desktop">
-            <table className="weather-table-horizontal">
+            <table className="weather-table-horizontal"
+                aria-label="Tabela prognozy pogody na 7 dni"
+                role="table">
+                <caption id="table-description" className="sr-only">
+                    Tabela zawiera prognozy pogody dla każdego z 7 dni: datę, ikonę pogody,
+                    temperatury minimalne i maksymalne oraz szacowaną energię słoneczną
+                </caption>
                 <thead>
                     <tr>
                         <th className="row-header">Dzień</th>

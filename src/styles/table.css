@@ -194,6 +194,13 @@
         text-transform: uppercase;
     }
 
+    body.high-contrast .weather-table-horizontal thead th,
+    body.high-contrast .weather-summary-table th {
+        background: var(--accent) !important;
+        color: #000000 !important;
+        border: 2px solid #000000 !important;
+    }
+
     .row-header {
         background: var(--bg-secondary);
         font-weight: 600;
@@ -201,6 +208,12 @@
         text-align: right;
         text-transform: uppercase;
         font-size: 0.875rem;
+    }
+
+    body.high-contrast .row-header {
+        background: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid #000000 !important;
     }
 
     .temp-min {
@@ -222,6 +235,13 @@
         white-space: normal;
         word-wrap: break-word;
         max-width: 250px;
+    }
+
+    body.high-contrast .weather-table-horizontal td,
+    body.high-contrast .weather-summary-table td {
+        border: 1px solid #000000 !important;
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
     }
 
     html[style*="125%"] .weather-table-horizontal th,

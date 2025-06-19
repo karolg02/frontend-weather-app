@@ -46,6 +46,8 @@ export const MobileTableWeather = ({ weatherData }: MobileTableWeatherProps) => 
         <div className="weather-forecast-mobile">
             <div
                 className="weather-cards"
+                role="region"
+                aria-label="Karty prognozy pogody - przewiń poziomo"
                 ref={scrollRef}
                 style={{
                     maskImage: `linear-gradient(to right, 

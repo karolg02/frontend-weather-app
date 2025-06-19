@@ -40,38 +40,120 @@
 }
 
 .location-btn {
-    background: var(--accent);
-    color: var(--bg-primary);
+    background: linear-gradient(135deg, var(--accent), #90349c);
+    color: white;
     border: none;
     padding: var(--spacing-lg) var(--spacing-xl);
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: var(--font-size-lg);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 31, 114, 0.3);
     width: 100%;
     min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-sm);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    user-select: none;
+}
+
+.location-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
 }
 
 .location-btn:hover:not(:disabled) {
-    background: var(--accent-hover);
+    background: linear-gradient(135deg, #90349c, var(--accent));
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 20px rgba(106, 31, 114, 0.4);
+    opacity: 1 !important;
+}
+
+.location-btn:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 .location-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+    background: #6b7280 !important;
+    color: #d1d5db !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-.location-btn:active {
-    transform: translateY(-1px);
+.location-btn:disabled::before {
+    display: none;
+}
+
+.location-btn:disabled:hover {
+    background: #6b7280 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.6 !important;
+}
+
+.location-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(106, 31, 114, 0.3);
+}
+
+.location-btn:focus-visible {
+    outline: 3px solid rgba(106, 31, 114, 0.5);
+    outline-offset: 2px;
+}
+
+/* Dark mode */
+body.dark .location-btn {
+    background: linear-gradient(135deg, #63b3ed, #90cdf4);
+    color: #1a202c;
+    box-shadow: 0 4px 15px rgba(99, 179, 237, 0.3);
+}
+
+body.dark .location-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #90cdf4, #63b3ed);
+    box-shadow: 0 6px 20px rgba(99, 179, 237, 0.4);
+    opacity: 1 !important;
+}
+
+body.dark .location-btn:focus-visible {
+    outline-color: rgba(99, 179, 237, 0.5);
+}
+
+/* High contrast mode */
+body.high-contrast .location-btn {
+    background: var(--accent) !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    box-shadow: 0 0 0 2px #000000, 0 0 10px rgba(255, 255, 0, 0.5) !important;
+}
+
+body.high-contrast .location-btn:hover:not(:disabled) {
+    background: #ffff99 !important;
+    color: #000000 !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+body.high-contrast .location-btn::before {
+    display: none;
+    /* Disable shimmer in high contrast */
+}
+
+body.high-contrast .location-btn:focus-visible {
+    outline: 3px solid #ff0000 !important;
+    outline-offset: 3px;
 }
 
 .loading {
