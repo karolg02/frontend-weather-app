@@ -5,11 +5,13 @@ interface GeolocationState {
     longitude: number | null;
     loading: boolean;
     error: string | null;
+    timestamp: number | null;
 }
 
 interface GeolocationCoordinates {
     latitude: number;
     longitude: number;
+    timestamp: number;
 }
 
 export const useGeolocation = () => {
@@ -17,7 +19,8 @@ export const useGeolocation = () => {
         latitude: null,
         longitude: null,
         loading: false,
-        error: null
+        error: null,
+        timestamp: null
     });
 
     const getCurrentLocation = useCallback(() => {
@@ -37,7 +40,8 @@ export const useGeolocation = () => {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     loading: false,
-                    error: null
+                    error: null,
+                    timestamp: Date.now()
                 });
             },
             (error) => {
@@ -70,15 +74,20 @@ export const useGeolocation = () => {
             latitude: null,
             longitude: null,
             loading: false,
-            error: null
+            error: null,
+            timestamp: null
         });
     }, []);
 
     const location: GeolocationCoordinates | null = useMemo(() => {
-        return state.latitude !== null && state.longitude !== null
-            ? { latitude: state.latitude, longitude: state.longitude }
+        return state.latitude !== null && state.longitude !== null && state.timestamp !== null
+            ? {
+                latitude: state.latitude,
+                longitude: state.longitude,
+                timestamp: state.timestamp
+            }
             : null;
-    }, [state.latitude, state.longitude]);
+    }, [state.latitude, state.longitude, state.timestamp]);
 
     return {
         location,

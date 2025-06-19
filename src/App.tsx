@@ -14,6 +14,7 @@ import { Loading } from './components/common/Loading';
 function App() {
   const accessibility = useAccessibility();
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [isUsingGeolocation, setIsUsingGeolocation] = useState(false);
 
   const geolocation = useGeolocation();
 
@@ -23,14 +24,27 @@ function App() {
   );
 
   useEffect(() => {
+    geolocation.getCurrentLocation();
+  }, []);
+
+  useEffect(() => {
     if (geolocation.location) {
-      setCoordinates(geolocation.location);
+      setCoordinates({
+        latitude: geolocation.location.latitude,
+        longitude: geolocation.location.longitude
+      });
+      setIsUsingGeolocation(true);
     }
-  }, [geolocation.location]);
+  }, [geolocation.location?.latitude, geolocation.location?.longitude, geolocation.location?.timestamp]);
 
   const handleLocationSelect = (lat: number, lng: number) => {
     setCoordinates({ latitude: lat, longitude: lng });
     geolocation.clearError();
+    setIsUsingGeolocation(false);
+  };
+
+  const handleGetCurrentLocation = () => {
+    geolocation.getCurrentLocation();
   };
 
   const handleRetry = () => {
@@ -55,21 +69,22 @@ function App() {
         <section className="location-section" aria-label="Wybór lokalizacji">
           <h2>Wybierz lokalizację</h2>
 
-          <div className="map-container">
-            <LocationPicker
-              onLocationSelect={handleLocationSelect}
-              selectedPosition={coordinates}
-            />
-          </div>
+          <LocationPicker
+            onLocationSelect={handleLocationSelect}
+            selectedPosition={coordinates}
+          />
 
           <div className="location-controls">
             <button
               className="location-btn"
-              onClick={geolocation.getCurrentLocation}
-              disabled={geolocation.loading}
+              onClick={handleGetCurrentLocation}
+              disabled={geolocation.loading || isUsingGeolocation}
               aria-describedby="location-status"
+              title={isUsingGeolocation ? "Używasz już swojej lokalizacji. Kliknij na mapie aby wybrać inną." : undefined}
             >
-              {geolocation.loading ? '📍 Lokalizowanie...' : '📍 Znajdź mnie'}
+              {geolocation.loading ? '📍 Lokalizowanie...' :
+                isUsingGeolocation ? '📍 Używasz swojej lokalizacji' :
+                  '📍 Znajdź mnie'}
             </button>
           </div>
         </section>

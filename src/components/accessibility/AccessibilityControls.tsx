@@ -39,7 +39,6 @@ export default function AccessibilityControls({
 
     return (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Font size controls */}
             <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
                 {fontSizes.map((size, index) => (
                     <button
