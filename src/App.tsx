@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccessibility } from './hooks/useAccessibility';
 import { useWeatherData } from './hooks/useWeatherData';
 import AccessibilityControls from './components/accessibility/AccessibilityControls';
+import { WeatherTable } from './components/weather/WeatherTable';
+import { WeatherSummaryTable } from './components/weather/WeatherSummaryTable';
+import LocationPicker from './components/map/LocationFromMap';
+import './styles/map.css';
+import "./styles/table.css";
 
 function App() {
   const accessibility = useAccessibility();
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [manualCoords, setManualCoords] = useState({ latitude: '', longitude: '' });
 
   const { weatherData, summaryData, loading: weatherLoading, error: weatherError } = useWeatherData(
     coordinates?.latitude,
@@ -58,32 +62,12 @@ function App() {
     );
   };
 
-  const handleManualCoordinates = () => {
-    const latitude = parseFloat(manualCoords.latitude);
-    const longitude = parseFloat(manualCoords.longitude);
+  useEffect(() => {
+    getMyLocation();
+  }, []);
 
-    if (isNaN(latitude) || isNaN(longitude)) {
-      setLocationError('Wprowadź prawidłowe współrzędne liczbowe');
-      return;
-    }
-
-    if (latitude < -90 || latitude > 90) {
-      setLocationError('Szerokość geograficzna musi być między -90 a 90');
-      return;
-    }
-
-    if (longitude < -180 || longitude > 180) {
-      setLocationError('Długość geograficzna musi być między -180 a 180');
-      return;
-    }
-
-    setCoordinates({ latitude, longitude });
-    setLocationError(null);
-  };
-
-  const resetLocation = () => {
-    setCoordinates(null);
-    setManualCoords({ latitude: '', longitude: '' });
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setCoordinates({ latitude: lat, longitude: lng });
     setLocationError(null);
   };
 
@@ -93,113 +77,61 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>Weather App</h1>
+        <h1>🌤️ Prognoza Pogody</h1>
         <AccessibilityControls {...accessibility} />
       </header>
 
       <main className="main">
-        {!coordinates && (
-          <div className="location-section">
-            <h2>Pobierz prognozę pogody dla lokalizacji</h2>
+        <section className="location-section" aria-label="Wybór lokalizacji">
+          <h2>Wybierz lokalizację</h2>
 
-            <div className="location-method">
-              <h3>Automatyczne wykrywanie</h3>
-              <button
-                className="location-btn"
-                onClick={getMyLocation}
-                disabled={locationLoading}
-              >
-                {locationLoading ? '📍 Pobieranie lokalizacji...' : '📍 Moja lokalizacja'}
-              </button>
-            </div>
-
-            <div className="divider">lub</div>
-
-            <div className="location-method">
-              <h3>Wprowadź współrzędne ręcznie</h3>
-              <div className="manual-coords">
-                <div className="coord-input">
-                  <label htmlFor="latitude">Szerokość geograficzna</label>
-                  <input
-                    id="latitude"
-                    type="number"
-                    step="any"
-                    placeholder="np. 50.0614"
-                    value={manualCoords.latitude}
-                    onChange={(e) => setManualCoords({ ...manualCoords, latitude: e.target.value })}
-                  />
-                  <small>Od -90 do 90</small>
-                </div>
-
-                <div className="coord-input">
-                  <label htmlFor="longitude">Długość geograficzna</label>
-                  <input
-                    id="longitude"
-                    type="number"
-                    step="any"
-                    placeholder="np. 19.9383"
-                    value={manualCoords.longitude}
-                    onChange={(e) => setManualCoords({ ...manualCoords, longitude: e.target.value })}
-                  />
-                  <small>Od -180 do 180</small>
-                </div>
-              </div>
-
-              <button
-                className="location-btn"
-                onClick={handleManualCoordinates}
-                disabled={!manualCoords.latitude || !manualCoords.longitude}
-              >
-                🌍 Użyj tych współrzędnych
-              </button>
-            </div>
+          <div className="map-container">
+            <LocationPicker
+              onLocationSelect={handleLocationSelect}
+              selectedPosition={coordinates}
+            />
           </div>
-        )}
 
-        {coordinates && (
-          <div className="current-location">
-            <p className="coordinates">
-              📍 Lokalizacja: {coordinates.latitude.toFixed(4)}, {coordinates.longitude.toFixed(4)}
-            </p>
-            <button className="reset-btn" onClick={resetLocation}>
-              Zmień lokalizację
+          <div className="location-controls">
+            <button
+              className="location-btn"
+              onClick={getMyLocation}
+              disabled={locationLoading}
+              aria-describedby="location-status"
+            >
+              {locationLoading ? '📍 Lokalizowanie...' : '📍 Znajdź mnie'}
             </button>
           </div>
-        )}
 
-        {isLoading && coordinates && (
-          <div className="loading">
-            <p>Ładowanie danych pogodowych...</p>
-          </div>
-        )}
+          {isLoading && coordinates && (
+            <div className="loading" id="location-status" role="status" aria-live="polite">
+              <p>Ładowanie danych pogodowych...</p>
+            </div>
+          )}
 
-        {error && (
-          <div className="error">
-            <p>Błąd: {error}</p>
-            {locationError && !coordinates && (
-              <button
-                className="retry-btn"
-                onClick={getMyLocation}
-              >
-                Spróbuj ponownie
-              </button>
-            )}
-          </div>
-        )}
+          {error && (
+            <div className="error" role="alert" aria-live="assertive">
+              <p>Błąd: {error}</p>
+            </div>
+          )}
+        </section>
 
         {!isLoading && !error && weatherData.length > 0 && (
-          <div className="weather-results">
+          <section className="weather-forecast-section" aria-label="Prognoza pogody">
             <h2>Prognoza na 7 dni</h2>
-            <pre>{JSON.stringify(weatherData, null, 2)}</pre>
-            {summaryData && (
-              <>
-                <h2>Podsumowanie tygodnia</h2>
-                <pre>{JSON.stringify(summaryData, null, 2)}</pre>
-              </>
-            )}
-          </div>
+            <div className="weather-results">
+              <WeatherTable weatherData={weatherData} />
+            </div>
+          </section>
         )}
       </main>
+
+      {!isLoading && !error && summaryData && (
+        <footer className="weather-summary-footer" aria-label="Podsumowanie prognozy">
+          <h2>Podsumowanie tygodnia</h2>
+          <WeatherSummaryTable summaryData={summaryData} />
+        </footer>
+      )}
     </div>
   );
 }

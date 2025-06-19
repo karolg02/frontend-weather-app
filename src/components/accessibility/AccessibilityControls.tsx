@@ -19,7 +19,7 @@ export default function AccessibilityControls({
     highContrast,
     setHighContrast
 }: AccessibilityControlsProps) {
-    const fontSizes = [100, 120, 150]
+    const fontSizes = [100, 125, 150]
 
     const toggleTheme = () => {
         if (highContrast) {

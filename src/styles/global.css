@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --border: #e2e8f0;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --accent: #3182ce;
+    --accent-hover: #2c5282;
+
+    --temp-cold: #3182ce;
+    --temp-hot: #e53e3e;
+    --energy-color: #38a169;
+
+    --cell-hover: #4a90e2;
+    --cell-hover-text: #ffffff;
+    --row-even: #f1f5f9;
+    --row-odd: #ffffff;
+
+    --spacing: 1rem;
+    --spacing-sm: 0.5rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+}
+
+body.dark {
+    --bg-primary: #1a202c !important;
+    --bg-secondary: #2d3748 !important;
+    --text-primary: #f7fafc !important;
+    --text-secondary: #e2e8f0 !important;
+    --border: #4a5568 !important;
+    --accent: #63b3ed !important;
+    --accent-hover: #90cdf4 !important;
+    --temp-cold: #90cdf4;
+    --temp-hot: #fc8181;
+    --energy-color: #68d391;
+    --row-even: #2d3748;
+    --row-odd: #1a202c;
+}
+
+body.high-contrast {
+    --bg-primary: #000000 !important;
+    --bg-secondary: #1a1a00 !important;
+    --text-primary: #ffff00 !important;
+    --text-secondary: #ffff99 !important;
+    --border: #ffff00 !important;
+    --accent: #ffff00 !important;
+    --accent-hover: #ffff99 !important;
+    --temp-cold: #00ffff;
+    --temp-hot: #ff0000;
+    --energy-color: #00ff00;
+    --cell-hover: #ffff00;
+    --cell-hover-text: #000000;
+    --row-even: #1a1a1a;
+    --row-odd: #000000;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+body.accessible-font {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    letter-spacing: 0.05em;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing) var(--spacing-xl);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: var(--spacing);
+}
+
+.main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.location-section,
+.weather-summary-footer {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-xl) 0;
+}
+
+.location-section h2,
+.weather-forecast-section h2,
+.weather-summary-footer h2 {
+    text-align: center;
+    color: var(--accent);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: var(--spacing);
+    }
+
+    .main {
+        padding: var(--spacing);
+    }
+
+    .location-section,
+    .weather-summary-footer {
+        padding: var(--spacing);
+    }
+}

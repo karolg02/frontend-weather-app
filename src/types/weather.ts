@@ -14,6 +14,6 @@ export interface WeatherSummaryDto {
     minTemperature: number;
     maxTemperature: number;
     averagePressure: number;
-    averageSunshineHours: number;
+    averageExpositionTime: number;
     weatherPrediction: string;
 }
