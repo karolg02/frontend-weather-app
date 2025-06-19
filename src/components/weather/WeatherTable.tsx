@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getWeatherIcon } from '../../utils/weatherIcons';
 import type { WeatherDto } from "../../types/weather";
@@ -9,6 +9,9 @@ interface WeatherData {
 
 export const WeatherTable = ({ weatherData }: WeatherData) => {
     const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
@@ -23,9 +26,35 @@ export const WeatherTable = ({ weatherData }: WeatherData) => {
         return date.toLocaleDateString('pl-PL', { weekday: 'short' });
     };
 
+    const checkScrollPosition = () => {
+        if (scrollRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+        }
+    };
+
+    useEffect(() => {
+        checkScrollPosition();
+        const scrollElement = scrollRef.current;
+        if (scrollElement) {
+            scrollElement.addEventListener('scroll', checkScrollPosition);
+            return () => scrollElement.removeEventListener('scroll', checkScrollPosition);
+        }
+    }, []);
+
     return (
         <div className="weather-forecast">
-            <div className="weather-cards">
+            <div
+                className="weather-cards"
+                ref={scrollRef}
+                style={{
+                    maskImage: `linear-gradient(to right, 
+                        ${canScrollLeft ? 'transparent 0, black 20px' : 'black 0'}, 
+                        black calc(100% - 20px), 
+                        ${canScrollRight ? 'transparent 100%' : 'black 100%'})`
+                }}
+            >
                 {weatherData.map((day, index) => (
                     <div key={index} className="weather-day-card">
                         <div className="card-header">

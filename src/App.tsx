@@ -61,7 +61,7 @@ function App() {
   return (
     <div className="App">
       <header className="header">
-        <h1>🌤️ Prognoza Pogody</h1>
+        <h1>🌤️ Weather App</h1>
         <AccessibilityControls {...accessibility} />
       </header>
 
