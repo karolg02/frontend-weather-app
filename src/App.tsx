@@ -19,7 +19,7 @@ function App() {
 
   const geolocation = useGeolocation();
 
-  const { weatherData, summaryData, loading: weatherLoading, error: weatherError } = useWeatherData(
+  const { weatherData, summaryData, loading: weatherLoading, error: weatherError, apiError, refetch } = useWeatherData(
     coordinates?.latitude,
     coordinates?.longitude
   );
@@ -49,17 +49,16 @@ function App() {
   };
 
   const handleRetry = () => {
-    if (weatherError) {
-      console.log('Retry weather data');
+    if (apiError || weatherError) {
+      refetch();
     } else if (geolocation.error) {
       geolocation.getCurrentLocation();
     }
   };
 
   const isLoading = geolocation.loading || weatherLoading;
-  const error = geolocation.error || weatherError;
+  const hasError = geolocation.error || weatherError || apiError;
 
-  // Dodaj scroll listener dla header effect
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -105,14 +104,15 @@ function App() {
           <Loading message="Ładowanie danych pogodowych..." />
         )}
 
-        {error && (
+        {hasError && (
           <ErrorMessage
-            message={error}
+            message={geolocation.error || weatherError || undefined}
+            error={apiError || undefined}
             onRetry={handleRetry}
           />
         )}
 
-        {!isLoading && !error && weatherData.length > 0 && (
+        {!isLoading && !hasError && weatherData.length > 0 && (
           <section className="weather-forecast-section" aria-label="Prognoza pogody">
             <h2>Prognoza na 7 dni</h2>
             <div className="weather-results">
@@ -122,7 +122,7 @@ function App() {
         )}
       </main>
 
-      {!isLoading && !error && summaryData && (
+      {!isLoading && !hasError && summaryData && (
         <footer className="weather-summary-footer" aria-label="Podsumowanie prognozy">
           <h2>Podsumowanie tygodnia</h2>
           <WeatherSummaryTable summaryData={summaryData} />
